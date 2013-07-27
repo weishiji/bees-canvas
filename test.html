@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+  <title>Image Upload Preview Demo</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <!-- Make sure that we can test against real IE8 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=8"/>
+  <script src="imageuploadpreview.js"></script>
+  <style type="text/css">
+    body {
+      margin: 20px;
+      font: 80% / normal 'arial', 'sans-serif';
+    }
+
+    #upload {
+      border: solid 3px #ccc;
+    }
+
+    .preview-image {
+      display: block;
+      margin: 10px 0;
+      border: solid 3px #aaa;
+      padding: 1px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Image Upload Preview Demo</h1>
+
+<p>Now's it's only compatible with IE6, IE7, IE8, and Firefox 3</p>
+
+<p>
+  <a href="http://code.google.com/p/image-upload-preview/">Google code project
+    home
+  </a>
+</p>
+
+<form>
+  <input type="file" id="upload" style="width:400px; padding:3px;"/>
+  <div id="file-info"></div>
+</form>
+
+
+<script type="text/javascript">
+  (function() {
+    var demo = new ImageUploadPreview(
+        
+        // Upload Input Element
+        document.getElementById('upload'),
+
+        // onPreviewSuccess handler.
+        function(imgInfo) {
+          var info = [];
+          for (var i in imgInfo) {
+            info.push('<li>', i, ' = ', imgInfo[i], '</li>');
+          }
+
+          if (info.length) {
+            info.unshift('<ul>');
+            info.push('</ul>');
+          }
+          this.getImageElement().className = 'preview-image';
+          document.getElementById('file-info').innerHTML = info.join('');
+        },
+
+        // onPreviewFail handler.
+        function() {
+          this.getImageElement().className = '';
+        });
+
+    demo.setMaxImageSize(demo.getInputElement().offsetWidth, 300);
+
+
+    // If the value already exists, try display image.
+    demo.preview();
+  })();
+</script>
+</body>
+</html>
