@@ -90,7 +90,7 @@ GamePage.game = (function(){
             this.ctx.strokeStyle = 'red';
             this.ctx.stroke();
             var _spin = function(){
-                that.y = 1/2 * 10 * Math.pow((new Date().getTime() / 1000 - that.timestamp),2) * 30 + 10
+                that.y = 1/2 * 100 * Math.pow((new Date().getTime() / 1000 - that.timestamp),2) * 30 + 10
                 if(that.y >= 500){
                     that.y = 10
                     that.timestamp = new Date().getTime() / 1000
