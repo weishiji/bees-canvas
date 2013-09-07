@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>basic-demo</title>
+<script src="../template.js"></script>
+<script src="../jquery.js"></script>
+</head>
+
+<body>
+<div id="content"></div>
+<script type="text/html" id="test2">
+	<div style="border:1px solid red;">
+		<button data-event="click1" id="click1"><%=name%></button>
+		<button data-event="click2" id="click2"><%=name2%></button>
+		<input data-event="fff" type="text" id="fff" />
+		<input data-event="fff" type="text" id="fff" />
+	</div>
+</script>
+<script type="text/javascript">
+	var data2 = {
+		"name" : "click me 1",
+		"name2" : "click me 2"
+	}
+
+	var eventHandler = window.eventHandler || (function(){
+		var _bindEvt = function(){
+			var that = this
+			this.$html.on("click",function(ev){
+				that.renderEvent(ev)
+			}).on("focus",function(ev){
+				that.renderEvent(ev)
+			}).on("blur",function(ev){
+				that.renderEvent(ev)
+			}).on("submit",function(ev){
+				that.renderEvent(ev)
+			})
+		}
+		function Event(html){
+			if(!(this instanceof Event)) return new Event(html) 
+			this.$html = html
+			this.eventArr = {}
+			_bindEvt.call(this)
+		}
+		Event.prototype.setEvent = function(type,funName,fun){
+			var that = this
+			if(!that.eventArr[type]){
+				that.eventArr[type] = {}
+				that.eventArr[type][funName] = fun
+			}else{
+				that.eventArr[type][funName] = fun
+			}
+		}
+		Event.prototype.renderEvent = function(evt){
+			if(!evt.target.attributes["data-event"]){
+				return
+			}
+			var type = evt.type
+				,funName = evt.target.attributes["data-event"].textContent
+			if(typeof this.eventArr[type][funName] === "function"){
+				this.eventArr[type][funName]()
+			}
+		}
+		Event.prototype.updateEvent = function(){
+
+		}
+		Event.prototype.removeEvent = function(type,funName){
+			delete this.eventArr[type][funName]
+		}
+		return Event
+	})()
+
+	var createElem = window.createElem || (function(){
+		function _element(){
+			if(!(this instanceof _element)) return new _element() 
+			var buttonGruop = template.render("test2",data2)
+			this.$buttonGruop = $(buttonGruop)
+			this.$buttonGruop.appendTo($("body"))
+			this.bindEvt()
+		}
+		_element.prototype.bindEvt = function(){
+			var that = this
+				,eventObject = eventHandler(that.$buttonGruop)
+			eventObject.setEvent("click","click2",function(){
+				that.test(that.test2)				
+			})
+			eventObject.setEvent("click","click1",function(){
+				that.test3()
+			})
+		}
+		_element.prototype.test = function(fun){
+			var that = this
+			fun.call(that)
+		}
+		_element.prototype.test2 = function(){
+			this.callbackName = "this.click2"
+			console.log(this.callbackName)
+		}
+		_element.prototype.test3 = function(){
+			console.log("this is click1")
+		}
+		return _element
+	})()
+	
+	createElem()
+</script>
+</body>
+</html>
