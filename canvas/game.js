@@ -34,7 +34,7 @@ weishiji.GAME = window.weishiji.GAME || (function(){
             this.events = {}
             var that = this
             this.animate.addAnimate("clearRect",function(){
-            	//that.ctx.clearRect(0,0,that.canva.width,that.canva.height)
+            	that.ctx.clearRect(0,0,that.canva.width,that.canva.height)
             })
     	}
     	stage.prototype.createCanvas = function(){
@@ -53,7 +53,13 @@ weishiji.GAME = window.weishiji.GAME || (function(){
     	}
     	return stage
     })()
+    var Spirit = (function(){
+    	function spirit(){
+    		console.log(this.stage)
+    	}
 
+    	return spirit
+    })()
     return {
     	"stageArr" : {},
     	"images" : {},
@@ -99,6 +105,9 @@ weishiji.GAME = window.weishiji.GAME || (function(){
 			
 			_load(0)
 
+		},
+		"getSpirit" : function(){
+			return Spirit
 		}
     }
 })()
