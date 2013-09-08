@@ -7,7 +7,7 @@ function startGame(){
 		stage.canva.addEventListener("click",function(ev){
 			var x = ev.offsetX, y = ev.offsetY
 			console.log(x + "__" + y)
-			weishiji.Sugar(stage,x,y,30)
+			weishiji.Sugar(stage,x,y,200)
 
 		},false)
 	})
@@ -60,9 +60,12 @@ weishiji.Sugar = (function(){
 	function sweet(stage,x,y,r){
 		var that = this
 		this.stage = stage
+		this.sX = x
+		this.sY = y
 		this.endX = x
 		this.endY = y
 		this.radius = r
+		this.startTime = new Date().getTime()
 		this.stage.animate.addAnimate("sweet",function(){
 			that.createSweet()
 		})
@@ -71,12 +74,17 @@ weishiji.Sugar = (function(){
 		var ctx = this.stage.ctx
 		ctx.lineTo(this.endX,this.endY)
 		ctx.stroke()
+		ctx.fillStyle="#FF0000"
+		ctx.beginPath()
+		ctx.arc(this.endX,this.endY,10,0,Math.PI*2,true)
+		ctx.closePath()
+		ctx.fill()
 		this.gravity()
 	}
 	sweet.prototype.gravity = function(){
 		var that = this
-		that.endY++
-		that.endY = that.endY
+		var t = (new Date().getTime() - that.startTime) / 1000
+		that.endY = that.sY+that.radius > (that.endY += 10 * t * t / 2 * 30) ? that.endY : that.sY + that.radius
 	}
 	return sugar
 })()
