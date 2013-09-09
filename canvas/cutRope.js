@@ -83,8 +83,19 @@ weishiji.Sugar = (function(){
 	}
 	sweet.prototype.gravity = function(){
 		var that = this
-		var t = (new Date().getTime() - that.startTime) / 1000
-		that.endY = that.sY+that.radius > (that.endY += 10 * t * t / 2 * 30) ? that.endY : that.sY + that.radius
+			,t = (new Date().getTime() - that.startTime) / 1000
+			,g = 10 ,speed = 100
+			,gs = that.sY + that.radius
+			,gt = Math.sqrt(gs * 2 / speed / g)
+		if(that.endY <= that.sY + that.radius){
+			that.endY += g * t * t / 2 * speed
+		}else if(that.endY > gs && that.endY <= gs + 100){
+			//var ft = t - gt
+			//that.endY += 0.1 / ft
+			/*var ft = t - gt
+			that.endY += -g * ft * ft / 2 * speed*/
+		}
+		//that.endY = that.sY+that.radius > (that.endY += 10 * t * t / 2 * 30) ? that.endY : that.sY + that.radius
 	}
 	return sugar
 })()
