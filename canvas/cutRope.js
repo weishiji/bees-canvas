@@ -91,6 +91,8 @@ weishiji.Sugar = (function(){
 			that.endY += g * t * t / 2 * speed
 		}else if(that.endY > gs && that.endY <= gs + 100){
 			
+
+			
 			//var ft = t - gt
 			//that.endY += 0.1 / ft
 			/*var ft = t - gt
