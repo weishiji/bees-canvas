@@ -81,7 +81,8 @@ function Ship(speed,image){
     this.shipHeight = this.image.height
     this.x = this.canvasWidth / 2 - this.shipWidth
     this.y = (this.canvasHeight - this.shipHeight) - 10
-    this.keyType = this.bindEvt()
+    this.keyStatus = this.bindEvt()
+    this.counter = 0 //子弹的计数器
 }
 fn.extend(Ship,Drawable)
 Ship.prototype.draw = function(){
@@ -96,7 +97,7 @@ Ship.prototype.bindEvt = function(){
     //获取当前的键盘相应事件类型，传递给move方法，移动飞机
     var that = this
         ,KEY_CODE = {
-            32 : "fire",
+            32 : "space",
             37 : "left",
             38 : "up",
             39 : "right",
@@ -104,29 +105,35 @@ Ship.prototype.bindEvt = function(){
         }
     document.body.onkeydown = function(ev){
         var code = (ev.keyCode) ? ev.keyCode : ev.charCode
-        that.keyType = KEY_CODE[code] || false
+        if(!KEY_CODE[code]){return}
+        that.keyStatus[KEY_CODE[code]] = true
+        ev.preventDefault()
     }
-    document.body.onkeyup = function(){
-        that.keyType = false
+    document.body.onkeyup = function(ev){
+        var code = (ev.keyCode) ? ev.keyCode : ev.charCode
+        if(KEY_CODE[code]){
+            that.keyStatus[KEY_CODE[code]] = false
+        }
+        ev.preventDefault()
     }
-    return that.keyType || false
+    return {}
 }
 Ship.prototype.move = function(){
-    var type = this.keyType
-    if(!type){return} // false return
-    if(type === "left"){
+    this.counter += 1
+    if(this.keyStatus.left){
         this.x -= this.speed
         if (this.x <= 0){this.x = 0}
-    }else if(type === "right"){
+    }else if(this.keyStatus.right){
         this.x += this.speed
         if (this.x >= this.canvasWidth - this.shipWidth){this.x = this.canvasWidth - this.shipWidth}
-    }else if(type === "up"){
+    }else if(this.keyStatus.up){
         this.y -= this.speed
         if (this.y <= this.canvasHeight/4*3){this.y = this.canvasHeight/4*3}
-    }else if(type === "down"){
+    }else if(this.keyStatus.down){
         this.y += this.speed
         if (this.y >= this.canvasHeight - this.shipHeight){this.y = this.canvasHeight - this.shipHeight}
-    }else{
+    }else if(this.keyStatus.space && this.counter > 200){
+        this.counter = 0
         // fire
         this.fire()
     }
@@ -134,13 +141,13 @@ Ship.prototype.move = function(){
 Ship.prototype.fire = function(){
     new Bullet(this.x,this.y,2,this.image)
 
+
 }
 function Bullet(x,y,speed,image){
     Drawable.call(this,x,y,speed)
     this.image = image
     this.bulletWidth = this.image.width
     this.buttetHeight = this.image.height
-    console.log(this.bulletWidth)
 }
 fn.extend(Bullet,Drawable)
 Bullet.prototype.test = function(){
