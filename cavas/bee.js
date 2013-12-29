@@ -26,6 +26,17 @@ var fn = {
         child.prototype.constructor = child
     }
 };
+/*
+* 所有的数据缓存
+*
+* */
+function Pool(){
+
+}
+Pool.prototype.init = function(){
+
+}
+
 function Drawable(x,y,speed){
     this.x = x
     this.y = y
@@ -37,9 +48,6 @@ function Drawable(x,y,speed){
 }
 Drawable.prototype.clearCanvas = function(){
     this.ctx.clearRect(this.x,this.y,this.canvasWidth,this.canvasHeight)
-}
-Drawable.prototype.clickEvt = function(fun){
-    this.canvas.addEventListener("click",fun)
 }
 Drawable.prototype.draw = function(){
 
@@ -185,6 +193,7 @@ var Game = (function(){
     game.prototype.init = function(){
         var background = new Background(this.images.background)
         background.draw()
+        var pool = new Pool()
         var ship = new Ship(3,this.images.ship)
         ship.draw()
     }
