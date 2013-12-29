@@ -132,7 +132,19 @@ Ship.prototype.move = function(){
     }
 }
 Ship.prototype.fire = function(){
-    console.log("fire bullut")
+    new Bullet(this.x,this.y,2,this.image)
+
+}
+function Bullet(x,y,speed,image){
+    Drawable.call(this,x,y,speed)
+    this.image = image
+    this.bulletWidth = this.image.width
+    this.buttetHeight = this.image.height
+    console.log(this.bulletWidth)
+}
+fn.extend(Bullet,Drawable)
+Bullet.prototype.test = function(){
+
 }
 
 ;(function(files,callback){
