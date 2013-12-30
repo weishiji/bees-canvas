@@ -82,9 +82,10 @@ Background.prototype.draw = function(){
 *
 * */
 
-function Ship(speed,image){
+function Ship(speed,image,bullet){
     Drawable.call(this,undefined,undefined,speed)
     this.image = image
+    this.bullet = bullet
     this.shipWidth = this.image.width
     this.shipHeight = this.image.height
     this.x = this.canvasWidth / 2 - this.shipWidth
@@ -128,27 +129,29 @@ Ship.prototype.bindEvt = function(){
 }
 Ship.prototype.move = function(){
     this.counter += 1
+    var interval = 20 //发射子弹的时间间隔
     if(this.keyStatus.left){
         this.x -= this.speed
         if (this.x <= 0){this.x = 0}
-    }else if(this.keyStatus.right){
+    }if(this.keyStatus.right){
         this.x += this.speed
         if (this.x >= this.canvasWidth - this.shipWidth){this.x = this.canvasWidth - this.shipWidth}
-    }else if(this.keyStatus.up){
+    }if(this.keyStatus.up){
         this.y -= this.speed
         if (this.y <= this.canvasHeight/4*3){this.y = this.canvasHeight/4*3}
-    }else if(this.keyStatus.down){
+    }if(this.keyStatus.down){
         this.y += this.speed
         if (this.y >= this.canvasHeight - this.shipHeight){this.y = this.canvasHeight - this.shipHeight}
-    }else if(this.keyStatus.space && this.counter > 200){
+    }if(this.keyStatus.space && this.counter > interval){
         this.counter = 0
         // fire
         this.fire()
     }
 }
 Ship.prototype.fire = function(){
-    new Bullet(this.x,this.y,2,this.image)
-
+    var adjust = 6//子弹的校正量
+    new Bullet(this.x+adjust,this.y,2,this.bullet)
+    new Bullet((this.x+this.shipWidth-adjust), this.y,2,this.bullet)
 
 }
 function Bullet(x,y,speed,image){
@@ -156,10 +159,16 @@ function Bullet(x,y,speed,image){
     this.image = image
     this.bulletWidth = this.image.width
     this.buttetHeight = this.image.height
+    this.draw()
 }
 fn.extend(Bullet,Drawable)
-Bullet.prototype.test = function(){
-
+Bullet.prototype.draw = function(){
+    var that = this
+    that.y -= this.speed
+    this.ctx.drawImage(this.image,this.x,this.y)
+    RAF(function(){
+        that.draw()
+    })
 }
 
 ;(function(files,callback){
@@ -194,7 +203,7 @@ var Game = (function(){
         var background = new Background(this.images.background)
         background.draw()
         var pool = new Pool()
-        var ship = new Ship(3,this.images.ship)
+        var ship = new Ship(3,this.images.ship,this.images.bullet)
         ship.draw()
     }
     return game
