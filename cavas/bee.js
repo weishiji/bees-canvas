@@ -26,17 +26,6 @@ var fn = {
         child.prototype.constructor = child
     }
 };
-/*
-* 所有的数据缓存
-*
-* */
-function Pool(){
-
-}
-Pool.prototype.init = function(){
-
-}
-
 function Drawable(x,y,speed){
     this.x = x
     this.y = y
@@ -52,6 +41,32 @@ Drawable.prototype.clearCanvas = function(){
 Drawable.prototype.draw = function(){
 
 };
+/*
+* 所有的数据缓存
+*
+* */
+function Pool(){
+    Drawable.call(this)
+    this.arr = new Array()
+}
+Pool.prototype.add = function(obj){
+    this.arr.push(obj)
+    this.clearBullet()
+
+}
+Pool.prototype.clearBullet = function(){
+    console.log(this.arr)
+    for(var i= 0,len = this.arr.length;i<len;i+=1){
+        var temp = this.arr[i]
+        console.log(temp)
+        if(temp){
+            if(temp.y < 0){
+                this.arr.splice(i,1)
+            }
+        }
+    }
+}
+
 /*
 * 星空的背景色的滚动
 *
@@ -92,6 +107,7 @@ function Ship(speed,image,bullet){
     this.y = (this.canvasHeight - this.shipHeight) - 10
     this.keyStatus = this.bindEvt()
     this.counter = 0 //子弹的计数器
+    this.bulletPool = new Pool()
 }
 fn.extend(Ship,Drawable)
 Ship.prototype.draw = function(){
@@ -149,10 +165,8 @@ Ship.prototype.move = function(){
     }
 }
 Ship.prototype.fire = function(){
-    var adjust = 6//子弹的校正量
-    new Bullet(this.x+adjust,this.y,2,this.bullet)
-    new Bullet((this.x+this.shipWidth-adjust), this.y,2,this.bullet)
-
+    var bullet = new Bullet(this.x,this.y,2,this.bullet)
+    this.bulletPool.add(bullet)
 }
 function Bullet(x,y,speed,image){
     Drawable.call(this,x,y,speed)
@@ -163,9 +177,11 @@ function Bullet(x,y,speed,image){
 }
 fn.extend(Bullet,Drawable)
 Bullet.prototype.draw = function(){
-    var that = this
+    var that = this, adjust = 6//子弹的校正量
+
     that.y -= this.speed
-    this.ctx.drawImage(this.image,this.x,this.y)
+    this.ctx.drawImage(this.image,this.x+adjust,this.y)
+    this.ctx.drawImage(this.image,this.x+40-adjust,this.y)
     RAF(function(){
         that.draw()
     })
@@ -202,7 +218,6 @@ var Game = (function(){
     game.prototype.init = function(){
         var background = new Background(this.images.background)
         background.draw()
-        var pool = new Pool()
         var ship = new Ship(3,this.images.ship,this.images.bullet)
         ship.draw()
     }
