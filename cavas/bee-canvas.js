@@ -23,9 +23,8 @@ var BEE = (function(){
         child.prototype.constructor = child
     }
     ,imageOnload = function(){
-        
-    };
 
+    };
     return {
         init : function(){
             var imgObj = [],len = imgSrc.length
