@@ -52,7 +52,6 @@ var BEE = (function(){
     //loadbar
     function LoadBar(){
     	DrawCanvas.call(this)
-        this.startDeg = 0
     }
     extend(LoadBar,DrawCanvas)
     LoadBar.prototype.loadImage = function(fun){
@@ -83,15 +82,19 @@ var BEE = (function(){
     	var centerX = this.getCanvasWidth() / 2
     		,centerY = this.getCnavasHeight() / 2
     		,radius = 60,deg = Math.PI * (2 * degNum / 100)
-
+            ,that = this
         this.clearCanvas()
     	this.ctx.beginPath()
         this.ctx.moveTo(centerX,centerY)
-    	this.ctx.arc(centerX,centerY,radius,this.startDeg,deg,false);
+    	this.ctx.arc(centerX,centerY,radius,0,deg,false);
         this.ctx.lineTo(centerX,centerY)
     	this.ctx.fillStyle = 'green';
         this.ctx.fill();
-        this.startDeg = deg
+        RAF(function(){
+            if(degNum === 100) return
+            degNum += 2
+            that.createCircle(degNum)
+        })
     }
     //sky
     function Background(){
@@ -104,15 +107,7 @@ var BEE = (function(){
         	//loader.loadImage(function(imageObj){
               //  console.log(imageObj)
         	//})
-            var i = 0,timer;
-            timer = setInterval(function(){
-                i += 1
-                loader.createCircle(i)
-                console.log(i)
-                if(i > 100){
-                    clearInterval(timer)
-                }
-            },10)
+            loader.createCircle(0)
         }
 
     }
