@@ -24,90 +24,63 @@ var BEE = (function(){
         F.prototype = parent.prototype
         child.prototype = new F()
         child.prototype.constructor = child
-    }
-    ,imageOnload = function(fun){
-    	var imageObj = []
-
-    	if(typeof fun === 'function'){
-    		fun(imageObj)
-    	}
     };
-    function DrawCanvas(x,y,speed){
-    	this.x = x
-    	this.y = y 
-    	this.speed = speed || 0
-    	this.canvas = document.getElementById('background')
-    	this.ctx = this.canvas.getContext("2d")
-    }
-    DrawCanvas.prototype.getCanvasWidth = function(){
-    	return this.canvas.width
-    }
-    DrawCanvas.prototype.getCnavasHeight = function(){
-    	return this.canvas.height	
-    }
-    DrawCanvas.prototype.clearCanvas = function(){
-    	this.ctx.clearRect(0,0,this.getCanvasWidth(),this.getCnavasHeight())
-    }
-
-    //loadbar
-    function LoadBar(){
-    	DrawCanvas.call(this)
-    }
-    extend(LoadBar,DrawCanvas)
-    LoadBar.prototype.loadImage = function(fun){
-    	var len = 0,srcArr = [],itemArr = [],imageObject = {},that = this
-    	for(var item in imageSrc){
-			itemArr.push(item)
-    		srcArr.push(imageSrc[item])
-    	}
-    	function _loadImage(srcArr){
-    		var temp = srcArr.splice(0,1)
-    		if(temp.length === 0) return; 
-    		var img = new Image()
-            img.src = temp
-            img.onload = function(){
-            	imageObject[itemArr[len]] = this
-	    		_loadImage(srcArr)
-                that.createCircle( len * 100 / itemArr.length)
-                len += 1
-                if(len === itemArr.length){
-                    that.createCircle(100)
-                    fun(imageObject)
+    var Stage = (function(){
+        var _bindEvt = function(){
+            var that = this
+            that.canvas.addEventListener('click',function(ev){
+                for(var item in that.events){
+                    var temp = that.events[item]
+                    temp()
                 }
+            })
+        }
+        function stage(){
+            this.canvas = document.getElementById('background')
+            this.ctx = this.canvas.getContext('2d')
+            this.attrs = {
+                'w' : this.canvas.width
+                ,'y' : this.canvas.height
             }
-    	}
-    	_loadImage(srcArr)
+            this.events = {}
+            this.shapesArr = []
+            _bindEvt.call(this)
+        }
+        stage.prototype.addEvt = function(name,fun){
+            if(this.events[name]) return
+            this.events[name] = fun
+        }
+        stage.prototype.removeEvt = function(name){
+            delete this.events[name]
+        }
+        stage.prototype.addShape = function(shape){
+            this.shapesArr.push(shape)
+        }
+        return new stage()
+    })
+    var Shape = (function(){
+
+        function shape(stage,x,y){
+            this.stage = stage
+            this.x = x
+            this.y = y
+        }
+        return shape
+    }())
+    function Sky(stage,x,y){
+        Shape.call(this,stage,x,y)
+        this.stage.addShape(this)
+        this.test()
     }
-    LoadBar.prototype.createCircle = function(degNum){
-    	var centerX = this.getCanvasWidth() / 2
-    		,centerY = this.getCnavasHeight() / 2
-    		,radius = 60,deg = Math.PI * (2 * degNum / 100)
-            ,that = this
-        this.clearCanvas()
-    	this.ctx.beginPath()
-        this.ctx.moveTo(centerX,centerY)
-    	this.ctx.arc(centerX,centerY,radius,0,deg,false);
-        this.ctx.lineTo(centerX,centerY)
-    	this.ctx.fillStyle = 'green';
-        this.ctx.fill();
-        RAF(function(){
-            if(degNum === 100) return
-            degNum += 2
-            that.createCircle(degNum)
-        })
+    extend(Sky,Shape)
+    Sky.prototype.test = function(){
+        console.log(this.stage.shapesArr)
     }
-    //sky
-    function Background(){
-    	DrawCanvas.call(this)
-    }
-    extend(Background,DrawCanvas)
-    return {
+    ;return {
         init : function(){
-        	var loader = new LoadBar()
-        	//loader.loadImage(function(imageObj){
-              //  console.log(imageObj)
-        	//})
-            loader.createCircle(0)
+            var stage = Stage()
+            new Sky(stage,10,10)
+            
         }
 
     }
