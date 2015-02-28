@@ -121,7 +121,11 @@ var BEE = (function(){
     Circle.prototype.startGame = function(){
         var that = this
         this.addEvt('start',function(clickPos){
-            
+            var img = new Image()
+            img.src = imageSrc['background']
+            img.onload = function(){
+                new Sky(that.stage,img)
+            }
         })
     }
     Circle.prototype.endGame = function(){
@@ -131,13 +135,11 @@ var BEE = (function(){
     }
     function Sky(stage,image){
         Shape.call(this)
-        this.stage.addShape(this)
         this.test()
     }
     extend(Sky,Shape)
     Sky.prototype.test = function(){
-        this.stage.ctx.fillRect(this.x,this.y,40,40)
-        console.log(this.stage.shapesArr)
+        console.log(this.stage)
     }
     ;return {
         init : function(){
