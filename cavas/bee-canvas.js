@@ -31,18 +31,20 @@ var BEE = (function(){
             var that = this
             that.canvas.addEventListener('click',function(ev){
                 var clickedX = ev.pageX - this.offsetLeft
-                    ,clickedY = ev.pageY - this.offsetTop;
+                    ,clickedY = ev.pageY - this.offsetTop
+                    ,clickPos = {'x' : clickedX,'y' : clickedY}
+                    ,currentShape
+                    ,bool = false
                 for(var i=0;i<that.shapesArr.length;i+=1){
-                    var temp = that.shapesArr[i]
-                    if (clickedX < temp.right && clickedX > temp.left && clickedY > temp.top && clickedY < temp.bottom) {
-                        alert ('clicked number ' + (i + 1));
-                        return
+                    currentShape = that.shapesArr[i]
+                    bool = that.isInboundary(clickPos,currentShape)
+                    if(bool) break
+                }
+                if(bool){
+                    for(var item in currentShape.events){
+                        var fun = currentShape.events[item](clickPos)
                     }
                 }
-                /*for(var item in that.events){
-                    var temp = that.events[item]
-                    temp()
-                }*/
             })
         }
         function stage(){
@@ -52,19 +54,20 @@ var BEE = (function(){
                 'w' : this.canvas.width
                 ,'y' : this.canvas.height
             }
-            this.events = {}
             this.shapesArr = []
             _bindEvt.call(this)
         }
-        stage.prototype.addEvt = function(name,fun){
-            if(this.events[name]) return
-            this.events[name] = fun
-        }
-        stage.prototype.removeEvt = function(name){
-            delete this.events[name]
-        }
+        
         stage.prototype.addShape = function(shape){
             this.shapesArr.push(shape)
+        }
+        stage.prototype.isInboundary = function(clickPos,shape){
+            var clickedX = clickPos['x']
+                ,clickedY = clickPos['y']
+            if(clickedX < shape.right && clickedX > shape.left && clickedY > shape.top && clickedY < shape.bottom) {
+                return true
+            }
+            return false
         }
         return new stage()
     })
@@ -73,6 +76,7 @@ var BEE = (function(){
             this.stage = stage
             this.x = x
             this.y = y
+            this.events = {}
         }
         shape.prototype.createCircle = function(){
             var x = this.x,y = this.y,radius = this.radius
@@ -80,6 +84,13 @@ var BEE = (function(){
             this.top = y - radius;
             this.right = x + radius;
             this.bottom = y + radius;
+        }
+        shape.prototype.addEvt = function(name,fun){
+            if(this.events[name]) return
+            this.events[name] = fun
+        }
+        shape.prototype.removeEvt = function(name){
+            delete this.events[name]
         }
         return shape
     }())
@@ -96,23 +107,30 @@ var BEE = (function(){
             ,x = this.x
             ,y = this.y
             ,radius = this.radius
+            ,that = this
         context.beginPath();
         context.arc(x, y, radius, 0, 2 * Math.PI, false);
         context.fillStyle = 'green';
         context.fill();
-        context.lineWidth = 1;
-        context.strokeStyle = '#333';
-        context.stroke();
 
         context.fillStyle = '#fff';
         context.textAlign = 'center';
 
         context.fillText('start', x, y);
     }
-
-
-    function Sky(stage,x,y){
-        Shape.call(this,stage,x,y)
+    Circle.prototype.startGame = function(){
+        var that = this
+        this.addEvt('start',function(clickPos){
+            
+        })
+    }
+    Circle.prototype.endGame = function(){
+        this.addEvt('end',function(clickPos){
+            console.log('end')
+        })
+    }
+    function Sky(stage,image){
+        Shape.call(this)
         this.stage.addShape(this)
         this.test()
     }
@@ -124,8 +142,10 @@ var BEE = (function(){
     ;return {
         init : function(){
             var stage = Stage()
-            new Circle(stage,100,100,20)
-            new Circle(stage,120,110,30)
+            var startCilcle = new Circle(stage,20,20,20)
+            startCilcle.startGame()
+            var endCilcle = new Circle(stage,180,110,30)
+            endCilcle.endGame()
         }
 
     }
