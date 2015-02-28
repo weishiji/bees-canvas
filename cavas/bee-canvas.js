@@ -42,7 +42,7 @@ var BEE = (function(){
                 }
                 if(bool){
                     for(var item in currentShape.events){
-                        var fun = currentShape.events[item](clickPos)
+                        currentShape.events[item](clickPos)
                     }
                 }
             })
@@ -52,7 +52,7 @@ var BEE = (function(){
             this.ctx = this.canvas.getContext('2d')
             this.attrs = {
                 'w' : this.canvas.width
-                ,'y' : this.canvas.height
+                ,'h' : this.canvas.height
             }
             this.shapesArr = []
             _bindEvt.call(this)
@@ -68,6 +68,9 @@ var BEE = (function(){
                 return true
             }
             return false
+        }
+        stage.prototype.clearCanvas = function(){
+            this.ctx.clearRect(0,0,this.attrs.w,this.attrs.h)
         }
         return new stage()
     })
@@ -134,20 +137,41 @@ var BEE = (function(){
         })
     }
     function Sky(stage,image){
-        Shape.call(this)
-        this.test()
+        Shape.call(this,stage)
+        this.x = 0
+        this.y = 0
+        this.speed = 1
+        this.image = image
+        this.draw()
     }
-    extend(Sky,Shape)
-    Sky.prototype.test = function(){
-        console.log(this.stage)
+    Sky.prototype.draw = function(){
+        var that = this
+        this.stage.clearCanvas()
+        this.y += this.speed
+        this.stage.ctx.drawImage(this.image,this.x,this.y)
+        this.stage.ctx.drawImage(this.image,this.x, this.y - this.stage.attrs.h)
+        RAF(function(){
+            that.draw()
+        })
+        if (this.y >= this.stage.attrs.h){
+            this.y = 0;
+        }
+    }
+    function Ship(stage,x,y,speed){
+        Shape.call(this,stage,x,y)
+        this.speed = speed
+    }
+    extend(Ship,Shape)
+    Ship.prototype.test = function(){
+        console.log(123)
     }
     ;return {
         init : function(){
             var stage = Stage()
-            var startCilcle = new Circle(stage,20,20,20)
-            startCilcle.startGame()
-            var endCilcle = new Circle(stage,180,110,30)
-            endCilcle.endGame()
+            var startCircle = new Circle(stage,20,20,20)
+            startCircle.startGame()
+            var endCricle = new Circle(stage,180,110,30)
+            endCricle.endGame()
         }
 
     }
