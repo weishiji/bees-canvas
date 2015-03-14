@@ -178,7 +178,7 @@ var BEE = (function(){
         this.speed = speed
     }
     extend(Ship,Shape)
-    Ship.prototype.test = function(){
+    Ship.prototype.draw = function(){
         console.log(123)
     }
     ;return {
