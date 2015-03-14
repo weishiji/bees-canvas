@@ -55,6 +55,7 @@ var BEE = (function(){
                 ,'h' : this.canvas.height
             }
             this.shapesArr = []
+			this.animates = {}
             _bindEvt.call(this)
         }
         
@@ -72,6 +73,19 @@ var BEE = (function(){
         stage.prototype.clearCanvas = function(){
             this.ctx.clearRect(0,0,this.attrs.w,this.attrs.h)
         }
+		stage.prototype.addAnimate = function(animateName,fun){
+			this.animates[animateName] = fun
+			for(var item in this.animates){
+				var temp = this.animates[item]
+				temp()
+			}
+		}
+		stage.prototype.removeAnimate = function(animateName){
+			delete this.animates[animateName]	
+		}
+		stage.prototype.stopAnimate = function(){
+			
+		}
         return new stage()
     })
     var Shape = (function(){
@@ -119,7 +133,7 @@ var BEE = (function(){
         context.fillStyle = '#fff';
         context.textAlign = 'center';
 
-        context.fillText('start', x, y);
+        context.fillText('click start', x, y);
     }
     Circle.prototype.startGame = function(){
         var that = this
@@ -150,9 +164,11 @@ var BEE = (function(){
         this.y += this.speed
         this.stage.ctx.drawImage(this.image,this.x,this.y)
         this.stage.ctx.drawImage(this.image,this.x, this.y - this.stage.attrs.h)
-        RAF(function(){
-            that.draw()
-        })
+		this.stage.addAnimate('background',function(){
+			RAF(function(){
+				that.draw()
+			})
+		})
         if (this.y >= this.stage.attrs.h){
             this.y = 0;
         }
@@ -168,10 +184,8 @@ var BEE = (function(){
     ;return {
         init : function(){
             var stage = Stage()
-            var startCircle = new Circle(stage,20,20,20)
-            startCircle.startGame()
             var endCricle = new Circle(stage,180,110,30)
-            endCricle.endGame()
+            endCricle.startGame()
         }
 
     }
