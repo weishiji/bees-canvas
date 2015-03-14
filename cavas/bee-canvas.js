@@ -149,14 +149,30 @@ var BEE = (function(){
 		})
     }
     Circle.prototype.startGame = function(){
-        var that = this
+		var that = this
+		var imageObject = {},srcArr = new Array(),itemArr = new Array()
+		for(var item in imageSrc){
+			srcArr.push(imageSrc[item])
+				itemArr.push(item)
+		}
+		var len = srcArr.length
+		var imageLoad = function(i){
+			if(srcArr[i]){
+				var img = new Image()
+					img.src = srcArr[i]
+					img.onload = function(){
+						imageObject[itemArr[i]] = this
+							imageLoad(++i)
+							if(i !== len){return}
+							that.stage.imageObject = imageObject
+							new Sky(that.stage)
+							new Ship(that.stage,3)
+					}
+			}
+		}
         this.addEvt('start',function(clickPos){
 			that.stage.removeAnimate('startButton')
-            var img = new Image()
-            img.src = imageSrc['background']
-            img.onload = function(){
-                new Sky(that.stage,img)
-            }
+			imageLoad(0)
         })
     }
     Circle.prototype.endGame = function(){
@@ -164,12 +180,12 @@ var BEE = (function(){
             console.log('end')
         })
     }
-    function Sky(stage,image){
+    function Sky(stage){
         Shape.call(this,stage)
         this.x = 0
         this.y = 0
         this.speed = 1
-        this.image = image
+        this.image = this.stage.imageObject['background'] 
         this.draw()
     }
     Sky.prototype.draw = function(){
@@ -184,14 +200,29 @@ var BEE = (function(){
             this.y = 0;
         }
     }
-    function Ship(stage,x,y,speed){
-        Shape.call(this,stage,x,y)
+    function Ship(stage,speed){
+        Shape.call(this,stage)
         this.speed = speed
+		this.image = this.stage.imageObject['ship']
+		this.shipWidth = this.image.width
+    	this.shipHeight = this.image.height
+   
+		this.x = this.stage.attrs.w / 2 - this.shipWidth
+	    this.y = (this.stage.attrs.h - this.shipHeight) - 10
+		console.log(this.stage,'this is global stage')
+		this.draw()
     }
     extend(Ship,Shape)
     Ship.prototype.draw = function(){
 		var that = this
-    	
+    	that.stage.ctx.drawImage(that.image,that.x,that.y)	
+		that.stage.addAnimate('ship',function(){
+			that.draw()
+		})
+	}
+	Ship.prototype.move = function(){
+		//TODO:move the Ship	
+		
 	}
     ;return {
         init : function(){
