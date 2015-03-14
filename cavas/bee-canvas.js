@@ -179,6 +179,7 @@ var BEE = (function(){
     }
     extend(Ship,Shape)
     Ship.prototype.draw = function(){
+		var that = this
         console.log(123)
     }
     ;return {
