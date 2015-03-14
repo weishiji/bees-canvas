@@ -47,6 +47,19 @@ var BEE = (function(){
                 }
             })
         }
+		var _startAnimate = function(){
+			var that = this
+			that.clearCanvas()
+			for(var item in that.animates){
+				var temp = that.animates[item]
+				temp()
+			}	
+
+			RAF(function(){
+				_startAnimate.call(that)
+			})
+		
+		}
         function stage(){
             this.canvas = document.getElementById('background')
             this.ctx = this.canvas.getContext('2d')
@@ -57,6 +70,7 @@ var BEE = (function(){
             this.shapesArr = []
 			this.animates = {}
             _bindEvt.call(this)
+			_startAnimate.call(this)
         }
         
         stage.prototype.addShape = function(shape){
@@ -75,10 +89,6 @@ var BEE = (function(){
         }
 		stage.prototype.addAnimate = function(animateName,fun){
 			this.animates[animateName] = fun
-			for(var item in this.animates){
-				var temp = this.animates[item]
-				temp()
-			}
 		}
 		stage.prototype.removeAnimate = function(animateName){
 			delete this.animates[animateName]	
@@ -134,10 +144,14 @@ var BEE = (function(){
         context.textAlign = 'center';
 
         context.fillText('click start', x, y);
+		that.stage.addAnimate('startButton',function(){
+			that.draw()
+		})
     }
     Circle.prototype.startGame = function(){
         var that = this
         this.addEvt('start',function(clickPos){
+			that.stage.removeAnimate('startButton')
             var img = new Image()
             img.src = imageSrc['background']
             img.onload = function(){
@@ -160,14 +174,11 @@ var BEE = (function(){
     }
     Sky.prototype.draw = function(){
         var that = this
-        this.stage.clearCanvas()
         this.y += this.speed
         this.stage.ctx.drawImage(this.image,this.x,this.y)
         this.stage.ctx.drawImage(this.image,this.x, this.y - this.stage.attrs.h)
 		this.stage.addAnimate('background',function(){
-			RAF(function(){
-				that.draw()
-			})
+			that.draw()
 		})
         if (this.y >= this.stage.attrs.h){
             this.y = 0;
@@ -180,8 +191,8 @@ var BEE = (function(){
     extend(Ship,Shape)
     Ship.prototype.draw = function(){
 		var that = this
-        console.log(123)
-    }
+    	
+	}
     ;return {
         init : function(){
             var stage = Stage()
