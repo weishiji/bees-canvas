@@ -206,23 +206,72 @@ var BEE = (function(){
 		this.image = this.stage.imageObject['ship']
 		this.shipWidth = this.image.width
     	this.shipHeight = this.image.height
-   
 		this.x = this.stage.attrs.w / 2 - this.shipWidth
 	    this.y = (this.stage.attrs.h - this.shipHeight) - 10
-		console.log(this.stage,'this is global stage')
+
+    	this.keyStatus = this.controlEvt()
+    	this.counter = 0 //子弹的数量
 		this.draw()
     }
     extend(Ship,Shape)
     Ship.prototype.draw = function(){
 		var that = this
     	that.stage.ctx.drawImage(that.image,that.x,that.y)	
+    	that.move()
 		that.stage.addAnimate('ship',function(){
 			that.draw()
 		})
 	}
+	Ship.prototype.controlEvt = function(){
+		//获取当前的键盘相应事件类型，传递给move方法，移动飞机
+	    var that = this
+	        ,KEY_CODE = {
+	            32 : "space",
+	            37 : "left",
+	            38 : "up",
+	            39 : "right",
+	            40 : "down"
+	        }
+	    document.body.onkeydown = function(ev){
+	        var code = (ev.keyCode) ? ev.keyCode : ev.charCode
+	        if(!KEY_CODE[code]){return}
+	        that.keyStatus[KEY_CODE[code]] = true
+	        ev.preventDefault()
+	    }
+	    document.body.onkeyup = function(ev){
+	        var code = (ev.keyCode) ? ev.keyCode : ev.charCode
+	        if(KEY_CODE[code]){
+	            that.keyStatus[KEY_CODE[code]] = false
+	        }
+	        ev.preventDefault()
+	    }
+	    return {}
+	}
 	Ship.prototype.move = function(){
-		//TODO:move the Ship	
-		
+		this.counter += 1
+	    var interval = 20 //发射子弹的时间间隔
+	    if(this.keyStatus.left){
+	        this.x -= this.speed
+	        if (this.x <= 0){this.x = 0}
+	    }if(this.keyStatus.right){
+	        this.x += this.speed
+	        if (this.x >= this.stage.attrs.w - this.shipWidth){this.x = this.stage.attrs.w - this.shipWidth}
+	    }if(this.keyStatus.up){
+	        this.y -= this.speed
+	        if (this.y <= this.stage.attrs.h/4*3){this.y = this.stage.attrs.h/4*3}
+	    }if(this.keyStatus.down){
+	        this.y += this.speed
+	        if (this.y >= this.stage.attrs.h - this.shipHeight){this.y = this.stage.attrs.h - this.shipHeight}
+	    }if(this.keyStatus.space && this.counter > interval){
+	        this.counter = 0
+	        // fire
+	        this.fire()
+	    }		
+	}
+	Ship.prototype.fire = function(){
+		//TODO:ship's file
+		console.log('file in the hole')		
+
 	}
     ;return {
         init : function(){
