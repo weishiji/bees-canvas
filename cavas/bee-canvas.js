@@ -271,7 +271,16 @@ var BEE = (function(){
 	Ship.prototype.fire = function(){
 		//TODO:ship's file
 		console.log('file in the hole')		
-
+			
+	}
+	// bullet class
+	function Bullet(stage,x,y,speed){
+		Shape.call(this,stage,x,y)	
+		this.speed = speed
+	}
+	extend(Bullet,Shape)
+	Bullet.prototype.draw = function(){
+		
 	}
     ;return {
         init : function(){
